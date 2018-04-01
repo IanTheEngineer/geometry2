@@ -38,6 +38,7 @@
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/WrenchStamped.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/Pose.h>
 
 
 namespace tf2
@@ -264,7 +265,7 @@ geometry_msgs::PoseStamped toMsg(const tf2::Stamped<KDL::Frame>& in)
 }
 
 /** \brief Convert a Pose message transform type to a stamped KDL Frame.
- * This function is a specialization of the toMsg template defined in tf2/convert.h.
+ * This function is a specialization of the fromMsg template defined in tf2/convert.h.
  * \param msg The PoseStamped message to convert.
  * \param out The pose converted to a timestamped KDL Frame.
  */
@@ -273,10 +274,21 @@ void fromMsg(const geometry_msgs::PoseStamped& msg, tf2::Stamped<KDL::Frame>& ou
 {
   out.stamp_ = msg.header.stamp;
   out.frame_id_ = msg.header.frame_id;
-  out.p[0] = msg.pose.position.x;
-  out.p[1] = msg.pose.position.y;
-  out.p[2] = msg.pose.position.z;
-  out.M = KDL::Rotation::Quaternion(msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w);
+  fromMsg(msg.pose, static_cast<KDL::Frame&>(out))
+}
+
+/** \brief Convert a Pose message type to a KDL Frame.
+ * This function is a specialization of the fromMsg template defined in tf2/convert.h.
+ * \param msg The Pose message to convert.
+ * \param out The pose converted to a KDL Frame.
+ */
+inline
+void fromMsg(const geometry_msgs::Pose& msg, KDL::Frame& out)
+{
+  out.p[0] = msg.position.x;
+  out.p[1] = msg.position.y;
+  out.p[2] = msg.position.z;
+  out.M = KDL::Rotation::Quaternion(msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w);
 }
 
 
